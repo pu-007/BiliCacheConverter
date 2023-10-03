@@ -28,7 +28,7 @@ def remove_mask(input, output):
     # close file
     f.close()
 
-def replaze_windows_illegal_char(input: str) -> str:
+def replace_windows_illegal_char(input: str) -> str:
     # replace windows illegal char with '_'
     # https://docs.microsoft.com/en-us/windows/win32/fileio/naming-a-file
     return re.sub(r'[\\/:*?"<>|]', "_", input)
@@ -80,7 +80,7 @@ def merge_video(video_folder: Path) -> None:
     else:
         os.system(f'ffmpeg -loglevel quiet -i "{audio}" -i "{video}"\
                     -c:v copy -c:a aac -strict experimental \
-                    "{OUTPUT_FOLDER / replaze_windows_illegal_char(title)}"')
+                    "{OUTPUT_FOLDER / replace_windows_illegal_char(title)}"')
         # remove temp audio and video track
         os.remove(audio)
         os.remove(video)

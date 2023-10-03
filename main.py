@@ -31,7 +31,8 @@ def remove_mask(input, output):
 def recognize_file_type(input) -> str | None:
     # use ffmpeg to recognize the input file has audio or video track
     cmd = f'ffmpeg -i "{input}"'
-    result = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+    result = subprocess.run(cmd, stdout=subprocess.PIPE, 
+                            stderr=subprocess.PIPE, shell=True)
     output = result.stderr.decode('utf-8')
     # video track should be checked at first
     # as if it's a video file
@@ -72,7 +73,8 @@ def merge_video(video_folder: Path) -> None:
     if audio is None or video is None:
         print(f"\tError: {video_folder} is not a valid video folder")
     else:
-        os.system(f'ffmpeg -loglevel quiet -i "{audio}" -i "{video}" -c:v copy -c:a aac -strict experimental "{OUTPUT_FOLDER / title}"')
+        os.system(f'ffmpeg -loglevel quiet -i "{audio}" -i "{video}"\
+                    -c:v copy -c:a aac -strict experimental "{OUTPUT_FOLDER / title}"')
         # remove temp audio and video track
         os.remove(audio)
         os.remove(video)
@@ -80,7 +82,10 @@ def merge_video(video_folder: Path) -> None:
 def process(bili_folder: Path):
     # Use a 'for loop' to iterate over all the 'folders' in 'bili_folder'
     for current, video_folder in enumerate(bili_folder.iterdir()):
-        print( f"[{current+1}/{count_folders(bili_folder)}][{video_folder.name}]", end = " ")
+        if not video_folder.is_dir():
+            continue
+        print( f"[{current+1}/{count_folders(bili_folder)}][{video_folder.name}]",
+            end = " ")
         merge_video(video_folder)
 
 if __name__ == "__main__":

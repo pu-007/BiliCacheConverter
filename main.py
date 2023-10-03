@@ -2,6 +2,7 @@ from pathlib import Path
 from json import load 
 import os
 import subprocess
+import re
 
 OUTPUT_FOLDER = Path("output")
 TEMP_FOLDER = Path("temp")
@@ -27,6 +28,10 @@ def remove_mask(input, output):
     # close file
     f.close()
 
+def replaze_windows_illegal_char(input: str) -> str:
+    # replace windows illegal char with '_'
+    # https://docs.microsoft.com/en-us/windows/win32/fileio/naming-a-file
+    return re.sub(r'[\\/:*?"<>|]', "_", input)
 
 def recognize_file_type(input) -> str | None:
     # use ffmpeg to recognize the input file has audio or video track
@@ -74,7 +79,8 @@ def merge_video(video_folder: Path) -> None:
         print(f"\tError: {video_folder} is not a valid video folder")
     else:
         os.system(f'ffmpeg -loglevel quiet -i "{audio}" -i "{video}"\
-                    -c:v copy -c:a aac -strict experimental "{OUTPUT_FOLDER / title}"')
+                    -c:v copy -c:a aac -strict experimental \
+                    "{OUTPUT_FOLDER / replaze_windows_illegal_char(title)}"')
         # remove temp audio and video track
         os.remove(audio)
         os.remove(video)
